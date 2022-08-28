@@ -366,8 +366,15 @@ class ParticleFilter(InferenceModule):
         "*** YOUR CODE HERE ***"
         pacmanPos=gameState.getPacmanPosition()
         jailPos=self.getJailPosition()
+        weights=DiscreteDistribution()
         for particle in self.particles:
             prob=self.getObservationProb(observation,pacmanPos,particle,jailPos)
+            weights[particle]+=prob
+        weights.normalize()
+        if weights.total()==0:
+            self.initializeUniformly(gameState)
+            weights=self.getBeliefDistribution()
+        self.particles=[weights.sample() for i in range(self.numParticles)]
 
 
     def elapseTime(self, gameState):
@@ -376,7 +383,13 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        tmp=[]
+        for particle in self.particles:
+            newPosDist=self.getPositionDistribution(gameState,particle)
+            newParticle=newPosDist.sample()
+            tmp.append(newParticle)
+        self.particles=tmp
+
 
     def getBeliefDistribution(self):
         """
