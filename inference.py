@@ -13,6 +13,7 @@
 
 
 import itertools
+from math import prod
 import random
 from tkinter.tix import DirSelectBox
 import busters
@@ -432,7 +433,11 @@ class JointParticleFilter(ParticleFilter):
         """
         self.particles = []
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        legal=self.legalPositions
+        product=list(itertools.product(legal,repeat=self.numGhosts))
+        random.shuffle(product)
+        for i in range(self.numParticles):
+            self.particles.append(product[i%len(product)])
 
     def addGhostAgent(self, agent):
         """
